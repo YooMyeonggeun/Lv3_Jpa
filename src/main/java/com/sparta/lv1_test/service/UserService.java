@@ -29,7 +29,18 @@ public class UserService {
         String password = signupRequestDto.getPassword();
         String email = signupRequestDto.getEmail();
 
+
+
         UserRoleEnum role = UserRoleEnum.USER;
+        if(signupRequestDto.isAdmin()) {
+            if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
+                throw new IllegalArgumentException("관리자 암호가 틀렸음");
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
+
+
         //회원 중복 확인
         Optional<User> userfind = userRepsotiry.findByUsername(username);
         if (userfind.isPresent()) {
