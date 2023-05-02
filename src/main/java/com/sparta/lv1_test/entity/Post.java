@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.*;
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -23,7 +25,6 @@ public class Post extends Timestamped{
 
     @Column(nullable = false)
     private String content;
-
 
     // dto에 담아서 반환
     public Post (String username,PostRequestDto postRequestDto) {

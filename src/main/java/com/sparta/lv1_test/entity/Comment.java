@@ -1,6 +1,7 @@
 package com.sparta.lv1_test.entity;
 
-import com.sparta.lv1_test.dto.CommentDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.lv1_test.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,24 +26,27 @@ public class Comment extends Timestamped{
         @Column(nullable = false)
         private String content;
 
+
+
         //작성된 게시글의 id번호
-        @Column(nullable = false)
-        private Long postid;
-
         @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "user_name")
-        private User user;
+        @JoinColumn(name = "post_id")
+        @JsonIgnore
+        private Post post;
 
-        public Comment (User user, CommentDto comdto){
+
+
+        //댓글작성
+        public Comment (Post post, User user, CommentRequestDto comdto){
+                this.post = post;
                 this.writer = user.getUsername();
                 this.content = comdto.getContent();
-                this.postid = comdto.getPostid();
         }
         
-        //업데이트
-        public void updateComment(CommentDto commentDto){
-                this.id = commentDto.getPostid();
-                this.content = commentDto.getContent();
+        //댓글 업데이트
+        public void updateComment(Long id, CommentRequestDto comdto){
+                this.id = id;
+                this.content = comdto.getContent();
         }
 
 }

@@ -1,6 +1,6 @@
 package com.sparta.lv1_test.controller;
 
-import com.sparta.lv1_test.dto.CommentDto;
+import com.sparta.lv1_test.dto.CommentRequestDto;
 import com.sparta.lv1_test.entity.Comment;
 import com.sparta.lv1_test.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,13 +17,13 @@ public class CommentController {
 
         // 댓글 등록
         @PostMapping("/api/comment")
-        public Optional<Comment> commentinsert(@RequestBody CommentDto comment, HttpServletRequest request){
+        public Optional<Comment> commentinsert(@RequestBody CommentRequestDto comment, HttpServletRequest request){
                return commentService.commentinsert(comment,request);
         }
 
         // 댓글 수정
         @PutMapping("/api/post/{id}")
-        public Optional<Comment> commmentupdate(@PathVariable Long id, @RequestBody CommentDto comment, HttpServletRequest request){
+        public Optional<Comment> commmentupdate(@PathVariable Long id, @RequestBody CommentRequestDto comment, HttpServletRequest request){
                 return commentService.commentupdate(id,comment,request);
         }
 
