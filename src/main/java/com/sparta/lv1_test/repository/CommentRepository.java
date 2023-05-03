@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-//    @Query("select c from new com.sparta.Lv1_test.dto.CommentDto() where c.post.id = :id order by c.modifyAt desc")
     @Query("select c from Comment c where c.post.id = :id order by c.modifyAt desc")
     List<CommentResponesDto> findbyPostId(@Param("id") Long id);
+
+    void deleteByPostId(Long id);
 }

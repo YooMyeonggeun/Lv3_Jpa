@@ -1,9 +1,9 @@
 package com.sparta.lv1_test.service;
 
-import com.sparta.lv1_test.dto.CommentRequestDto;
 import com.sparta.lv1_test.dto.CommentResponesDto;
 import com.sparta.lv1_test.dto.PostAndCommentAllDto;
 import com.sparta.lv1_test.dto.PostRequestDto;
+import com.sparta.lv1_test.entity.Comment;
 import com.sparta.lv1_test.entity.Post;
 import com.sparta.lv1_test.entity.User;
 import com.sparta.lv1_test.repository.CommentRepository;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -69,10 +70,11 @@ public class PostService {
 
     public Long deletePost(Long id, HttpServletRequest request) {
         User user =  tockenUtil.tockencheck(request);
-        Post post = postRepository.findById(id).orElseThrow(
+
+        Post post = postRepository.findById(id).orElseThrow( // 게시글 삭제
                 () -> new IllegalArgumentException("존재하지 않는 id")
         );
-
+        commentRepository.deleteByPostId(post.getId());
         // 삭제권한 체크
         if(user.getUsername().equals(post.getUsername())){
             postRepository.deleteById(id);
@@ -81,7 +83,4 @@ public class PostService {
         }
         return id;
     }
-
-
-
 }
