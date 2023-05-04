@@ -9,6 +9,7 @@ import com.sparta.lv1_test.repository.UserRepsotiry;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,17 +21,18 @@ public class UserService {
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
     private final UserRepsotiry userRepsotiry;
 
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
 
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
-        String password = signupRequestDto.getPassword();
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());
         String email = signupRequestDto.getEmail();
 
 
-
+        // 관리자 체크
         UserRoleEnum role = UserRoleEnum.USER;
         if(signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
@@ -38,8 +40,6 @@ public class UserService {
             }
             role = UserRoleEnum.ADMIN;
         }
-
-
 
         //회원 중복 확인
         Optional<User> userfind = userRepsotiry.findByUsername(username);
@@ -63,7 +63,7 @@ public class UserService {
         User user = userRepsotiry.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다"));
 
         //비밀번호 확인
-        if (!user.getPassword().equals(password)) {
+        if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
 

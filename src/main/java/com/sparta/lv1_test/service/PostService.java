@@ -29,6 +29,9 @@ public class PostService {
 
     public Post createPost(PostRequestDto requestDto, HttpServletRequest request){
         // 유효한 토큰값 username에 넣기
+
+
+
         Post post = new Post(tockenUtil.tockencheck(request).getUsername(),requestDto);
         postRepository.save(post);
         return post;
@@ -46,7 +49,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostAndCommentAllDto getPost(Long id){
+    public PostAndCommentAllDto getPost(Long id){ // 게시물 전체 조회
          Post postchose = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 id")
         );
@@ -55,28 +58,28 @@ public class PostService {
     }
 
 
-    public Long updatePost(Long id, PostRequestDto requestDto, HttpServletRequest request){
+    public Long updatePost(Long id, PostRequestDto requestDto, User user){ //게시글 수정
         //유효한 토큰값 체크
-        User user = tockenUtil.tockencheck(request);
+//        User user = tockenUtil.tockencheck(request);
         Post post = postRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("존재하지 않는 id")
         );
-        if(user.getUsername().equals(post.getUsername())){
+
+        if(user.getUsername().equals(post.getUsername()) || user.getRole().equals(user.getRole().ADMIN)){
             post.updatePost(requestDto);
         }
         return post.getId();
     }
 
 
-    public Long deletePost(Long id, HttpServletRequest request) {
-        User user =  tockenUtil.tockencheck(request);
+    public Long deletePost(Long id, User user) {  //게시글 수정
 
         Post post = postRepository.findById(id).orElseThrow( // 게시글 삭제
                 () -> new IllegalArgumentException("존재하지 않는 id")
         );
         commentRepository.deleteByPostId(post.getId());
         // 삭제권한 체크
-        if(user.getUsername().equals(post.getUsername())){
+        if(user.getUsername().equals(post.getUsername()) || user.getRole().equals(user.getRole().ADMIN)){
             postRepository.deleteById(id);
         }else{
             throw new IllegalArgumentException("삭제권한이 없습니다");

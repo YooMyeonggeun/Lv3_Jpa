@@ -3,10 +3,13 @@ package com.sparta.lv1_test.controller;
 import com.sparta.lv1_test.dto.PostAndCommentAllDto;
 import com.sparta.lv1_test.dto.PostRequestDto;
 import com.sparta.lv1_test.entity.Post;
+import com.sparta.lv1_test.entity.User;
 import com.sparta.lv1_test.jwt.JwtUtil;
+import com.sparta.lv1_test.security.UserDetailsImpl;
 import com.sparta.lv1_test.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,14 +39,14 @@ public class PostController {
     }
 
     @PutMapping("/api/posts/{id}") // 게시판 데이터 수정
-    public Long updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
-        return postService.updatePost(id, requestDto,request);
+    public Long updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.updatePost(id, requestDto,userDetails.getUser());
     }
 
 
     @DeleteMapping("/api/posts/{id}") // 게시판 데이터 삭제
-    public Long deletePost(@PathVariable Long id, HttpServletRequest request) {
-        return postService.deletePost(id,request);
+    public Long deletePost(@PathVariable Long id,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.deletePost(id,userDetails.getUser());
     }
 
     @GetMapping("/api/posts/{id}") // 선택한 게시판 데이터 조회
